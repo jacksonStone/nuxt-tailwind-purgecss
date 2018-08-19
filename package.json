@@ -1,0 +1,33 @@
+{
+  "name": "nuxt-express-2",
+  "version": "1.0.0",
+  "description": "My mathematical Nuxt.js project",
+  "author": "Jackson Stone",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
+    "build": "nuxt build",
+    "start": "cross-env NODE_ENV=production node server/index.js",
+    "build-prod": "cross-env NODE_ENV=production nuxt build",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint"
+  },
+  "dependencies": {
+    "nuxt": "^1.0.0",
+    "express": "^4.15.3",
+    "@nuxtjs/axios": "^5.0.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^8.6.4",
+    "babel-eslint": "^8.2.1",
+    "cross-env": "^5.0.1",
+    "eslint": "^5.0.1",
+    "eslint-loader": "^2.0.0",
+    "eslint-plugin-vue": "^4.0.0",
+    "glob-all": "^3.1.0",
+    "nodemon": "^1.11.0",
+    "purgecss-webpack-plugin": "^1.2.1",
+    "tailwindcss": "^0.6.1"
+  }
+}
