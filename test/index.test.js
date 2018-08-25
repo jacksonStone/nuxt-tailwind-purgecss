@@ -1,38 +1,49 @@
-import test from 'ava'
-import { Nuxt, Builder } from 'nuxt'
-import { resolve } from 'path'
+const request = require('supertest');
+const sandn = require('../server/server');
+const { Builder } = require('nuxt');
+const assert = require('assert');
+let server;
+let liveServer;
 
-// We keep a reference to Nuxt so we can close
-// the server at the end of the test
-let nuxt = null
 
-// Init Nuxt.js and start listening on localhost:4000
-test.before('Init Nuxt.js', async t => {
-  const rootDir = resolve(__dirname, '..')
-  let config = {}
-  try { config = require(resolve(rootDir, 'nuxt.config.js')) } catch (e) {}
-  config.rootDir = rootDir // project folder
-  config.dev = false // production build
-  nuxt = new Nuxt(config)
-  nuxt.listen(4000, 'localhost')
-})
+describe('GET API and get page', function() {
+  before(async function(){
+    let sandnInstance = await sandn('localhost', 4000);
+    this.timeout(30000);
+    server = sandnInstance.server;
+    nuxt = sandnInstance.nuxt;
+    const builder = new Builder(nuxt);
+    await builder.build();
+    // return new Promise((res) => {
+    //   liveServer = server.listen(4000, res);
+    // })
+    
+    // runs before all tests in this block
+  });
+  it('respond with json', function(done) {
+    request(server)
+      .get('/api')
+      .expect('Content-Type', /json/)
+      .expect(200, done);
+  });
+  it('respond with html', function(done) {
+    request(server)
+      .get('/')
+      .expect('Content-Type', /html/)
+      .expect(200, done);
 
-// Example of testing only generated html
-test('Route / exits and render HTML', async t => {
-  let context = {}
-  const { html } = await nuxt.renderRoute('/', context)
-  t.true(html.includes('Adam Wathan'))
-})
-
-// Example of testing via DOM checking
-test('Route / exits and render HTML with CSS applied', async t => {
-  const window = await nuxt.renderAndGetWindow('http://localhost:4000/')
-  const element = window.document.querySelector('.leading-tight')
-  t.not(element, null)
-  t.is(element.textContent, 'Adam Wathan')
-})
-
-// Close the Nuxt server
-test.after('Closing server', t => {
-  nuxt.close()
-})
+    // try {
+    //   const { html } = await nuxt.renderRoute('/', {})
+    //   assert(html.includes('Adam Wathan'))
+    //   // console.log('Trying;')
+    //   // const window = await nuxt.renderAndGetWindow('http://localhost:4000/')
+    //   // console.log('Page rendered');
+    //   // const element = window.document.querySelector('.text-xl');
+    //   // assert.notEqual(element, null);
+    //   // assert.equal(element.textContent, 'Adam Wathan');
+    // }
+  });
+  after(function(){
+    // liveServer.close();
+  });
+});
